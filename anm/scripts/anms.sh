@@ -46,8 +46,8 @@ CheckSetUp() {
         sudo useradd -m -p ed5wsejw6S4ifjlwjfSlwj ant
         sudo mkdir -p /var/antctl/
         sudo chown -R $USER:$USER /var/antctl/
-        sudo mkdir -p $NodeStorage/ /var/log/antnode/ /var/antctl/bootstrap-cache/
-        sudo chown -R ant:ant $NodeStorage/ /var/log/antnode/ /var/antctl/bootstrap-cache/
+        sudo mkdir -p /var/antctl/services/ /var/log/antnode/ /var/antctl/bootstrap-cache/
+        sudo chown -R ant:ant /var/antctl/services/ /var/log/antnode/ /var/antctl/bootstrap-cache/
         echo "CpuCount=$(echo "$(nproc) / 1" | bc)" >>/var/antctl/system
         . /var/antctl/system
         echo "CounterStart=0" >>/var/antctl/counters
