@@ -125,18 +125,19 @@ StartNode() {
         AddNode
     fi
 
-    node_number=$(seq -f "%03g" $NextNodeToSorA $NextNodeToSorA)
+    node_number=$(seq -f "%04g" $NextNodeToSorA $NextNodeToSorA)
     node_name=antnode$node_number
     echo ""$time_hour":"$time_min" Start $node_name" >>/var/antctl/simplelog
     echo "Starting $node_name"
-    sudo ufw allow $(($ntpr*1000+10#$node_number))/udp comment "$node_name"
-    echo "Opened firewall port $(($ntpr*1000+10#$node_number))/udp"
+    sudo ufw allow $(("$ntpr"000 + $NextNodeToSorA))/udp comment "$node_name"
+    echo "Opened firewall port $(("$ntpr"000 + $NextNodeToSorA))/udp"
+    ########################################################################################################### for dont startnode
     sudo systemctl start $node_name
     echo "systemctl start $node_name"
     sleep 45
     # status="$(sudo systemctl status $node_name.service --no-page)"
     # PeerId=$(echo "$status" | grep "id=" | cut -f2 -d= | cut -d '`' -f 1)
-    node_metadata="$(curl -s 127.0.0.1:$((13*1000+10#$node_number))/metadata)"
+    node_metadata="$(curl -s 127.0.0.1:$((13000 + $NextNodeToSorA))/metadata)"
     PeerId="$(echo "$node_metadata" | grep ant_networking_peer_id | awk 'NR==3 {print $1}' | cut -d'"' -f 2)"
     node_details_store[$node_number]="$node_name,$PeerId,$(/var/antctl/services/$node_name/antnode --version | awk 'NR==1 {print $3}' | cut -c2-),RUNNING"
     echo "$node_name Started"
@@ -146,7 +147,7 @@ StartNode() {
 
 AddNode() {
     . $HOME/.local/share/anm-wallet
-    node_number=$(seq -f "%03g" $NextNodeToSorA $NextNodeToSorA)
+    node_number=$(seq -f "%04g" $NextNodeToSorA $NextNodeToSorA)
     node_name=antnode$node_number
     if [ "$node_number" = "001" ]; then
         activeRewardsAddress="--rewards-address ${DonateAddress:-0x270A246bcdD03A4A70dc81C330586882a6ceDF8f}"
@@ -167,7 +168,7 @@ AddNode() {
 Description=$node_name
 [Service]
 User=ant
-ExecStart=/var/antctl/services/$node_name/antnode --bootstrap-cache-dir /var/antctl/bootstrap-cache --root-dir /var/antctl/services/$node_name --port $(($ntpr*1000+10#$node_number)) --enable-metrics-server --metrics-server-port $((13*1000+10#$node_number)) --log-output-dest /var/log/antnode/$node_name --max-log-files 1 --max-archived-log-files 1 $RewardsAddress evm-arbitrum-one
+ExecStart=/var/antctl/services/$node_name/antnode --bootstrap-cache-dir /var/antctl/bootstrap-cache --root-dir /var/antctl/services/$node_name --port $(("$ntpr"000 + $NextNodeToSorA)) --enable-metrics-server --metrics-server-port $((13000 + $NextNodeToSorA)) --log-output-dest /var/log/antnode/$node_name --max-log-files 1 --max-archived-log-files 1 $RewardsAddress evm-arbitrum-one
 Restart=always
 #RestartSec=300
 EOF
@@ -221,7 +222,7 @@ TearDown() {
 }
 
 RemoveNode() {
-    node_number=$(seq -f "%03g" $1 $1)
+    node_number=$(seq -f "%04g" $1 $1)
     node_name=antnode$node_number
     echo ""$time_hour":"$time_min" Remove $node_name" >>/var/antctl/simplelog
     echo "Removing $node_name" && echo
@@ -233,8 +234,8 @@ RemoveNode() {
     echo "rm /etc/systemd/system/$node_name.service"
     sudo systemctl daemon-reload
     echo "systemctl daemon-reload"
-    sudo ufw delete allow $(($ntpr*1000+10#$node_number))/udp
-    echo "closed firewall port $(($ntpr*1000+10#$node_number))/udp"
+    sudo ufw delete allow $(("$ntpr"000 + $1))/udp
+    echo "closed firewall port $(("$ntpr"000 + $1))/udp"
     unset 'node_details_store[$node_number]'
     echo "deleted array entery" && echo
 
@@ -245,7 +246,7 @@ StopNode() {
         echo "no nodes to stop" && echo
         return 0
     fi
-    node_number=$(seq -f "%03g" $NextNodeSorR $NextNodeSorR)
+    node_number=$(seq -f "%04g" $NextNodeSorR $NextNodeSorR)
     node_name=antnode$node_number
     echo ""$time_hour":"$time_min" Stop $node_name" >>/var/antctl/simplelog
     echo "Stopping $node_name"
@@ -255,8 +256,8 @@ StopNode() {
     echo "updated array $node_name"
     sudo systemctl stop $node_name
     echo "systemctl stop $node_name"
-    sudo ufw delete allow $(($ntpr*1000+10#$node_number))/udp
-    echo "closed firewall port $(($ntpr*1000+10#$node_number))/udp"
+    sudo ufw delete allow $(("$ntpr"000 + $NextNodeSorR))/udp
+    echo "closed firewall port $(("$ntpr"000 + $NextNodeSorR))/udp"
     echo "$node_name Stopped" && echo
     echo "RemoveCounter$NextNodeSorR=$DelayRemove" >>/var/antctl/counters
     sed -i 's/CounterStart=.*/CounterStart='$DelayReStart'/g' /var/antctl/counters
@@ -272,7 +273,7 @@ UpgradeNode() {
         echo "upgrade not allowed during Removal" && echo
         return 0
     fi
-    node_number=$(seq -f "%03g" $1 $1)
+    node_number=$(seq -f "%04g" $1 $1)
     node_name=antnode$node_number
     echo ""$time_hour":"$time_min" Upgrade $node_name running" >>/var/antctl/simplelog
     echo "upgradeing $node_name"
@@ -295,7 +296,7 @@ UpgradeNode() {
     sleep 45
     # status="$(sudo systemctl status $node_name.service --no-page)"
     # PeerId=$(echo "$status" | grep "id=" | cut -f2 -d= | cut -d '`' -f 1)
-    node_metadata="$(curl -s 127.0.0.1:$((13*1000+10#$node_number))/metadata)"
+    node_metadata="$(curl -s 127.0.0.1:$((13000 + $1))/metadata)"
     PeerId="$(echo "$node_metadata" | grep ant_networking_peer_id | awk 'NR==3 {print $1}' | cut -d'"' -f 2)"
     node_details_store[$node_number]="$node_name,$PeerId,$(/var/antctl/services/$node_name/antnode --version | awk 'NR==1 {print $3}' | cut -c2-),RUNNING"
     echo "updated array"
@@ -304,7 +305,7 @@ UpgradeNode() {
 }
 
 StoppedUpgrade() {
-    node_number=$(seq -f "%03g" $1 $1)
+    node_number=$(seq -f "%04g" $1 $1)
     node_name=antnode$node_number
     echo ""$time_hour":"$time_min" Upgrade $node_name stopped" >>/var/antctl/simplelog
     echo "upgradeing $node_name"
@@ -461,7 +462,7 @@ ShunnGun() {
         fi
         # load veraiable from ntracking for max shunned node
         . /var/antctl/MaxShunnedNode >/dev/null 2>&1
-        node_number=$(seq -f "%03g" $MaxShunnedNode $MaxShunnedNode)
+        node_number=$(seq -f "%04g" $MaxShunnedNode $MaxShunnedNode)
         node_name=antnode$node_number
         echo ""$time_hour":"$time_min" Shunn gun $node_name Shunn's $ShunnedValue" >>/var/antctl/simplelog
         echo && echo "Shunngun $node_name" && echo
@@ -513,7 +514,7 @@ LoadTrimmer() {
             AntNodeString=$(sudo file /proc/"$largest_pid"/exe)
             HiMemNode=$(echo $AntNodeString | grep -P -i -o '[antnode]+[0-9]+' | grep -P -i -o '[0-9]+')
             node_number=$HiMemNode
-            node_number=$(seq -f "%03g" $node_number $node_number)
+            node_number=$(seq -f "%04g" $node_number $node_number)
             node_name=antnode$node_number
             echo ""$time_hour":"$time_min" replace hi load node $node_name" >>/var/antctl/simplelog
             echo "replacing $node_name"
@@ -526,7 +527,7 @@ LoadTrimmer() {
             sudo systemctl start $node_name
             echo "systemctl start $node_name"
             sleep 45
-            node_metadata="$(curl -s 127.0.0.1:$((13*1000+10#$node_number))/metadata)"
+            node_metadata="$(curl -s 127.0.0.1:$((13000 + $node_number))/metadata)"
             PeerId="$(echo "$node_metadata" | grep ant_networking_peer_id | awk 'NR==3 {print $1}' | cut -d'"' -f 2)"
             node_details_store[$node_number]="$node_name,$PeerId,$(/var/antctl/services/$node_name/antnode --version | awk 'NR==1 {print $3}' | cut -c2-),RUNNING"
             echo "updated array"

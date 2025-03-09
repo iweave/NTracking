@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-ClientVersion="--version 0.3.7"
-NodeVersion="--version 0.3.6"
+ClientVersion="--version 0.3.8"
+NodeVersion="--version 0.3.7"
 
-NodeRestarVer1="0.3.6"
-NodeRestarVer2="0.2.6"
+NodeRestarVer1="0.3.7"
+NodeRestarVer2="0.2.7"
 
 #run with
 # bash <(curl -s https://raw.githubusercontent.com/safenetforum-community/NTracking/main/anm/anm-local.sh)
@@ -102,7 +102,7 @@ elif [[ "$SELECTION" == "6" ]]; then
         . /var/antctl/teardown_config
         WalletAddress=${RewardsAddress##* }
         # Fallback to defaults if we don't get have settings for some reason
-        sudo sed -i 's,/var/antctl/services,'${NodeStorage:-/var/ant/services}',g' /usr/bin/influx-resources.sh
+        sudo sed -i 's,/var/antctl/services,'${NodeStorage:-/var/antctl/services}',g' /usr/bin/influx-resources.sh
         sudo sed -i 's/WalletAddress=YourWalletAddress/WalletAddress='${WalletAddress:-YourWalletAddress}'/g' /usr/bin/influx-resources.sh
     fi
     echo "*/20 * * * * $USER /usr/bin/mkdir -p /tmp/influx-resources && /bin/bash /usr/bin/influx-resources.sh > /tmp/influx-resources/influx-resources" | sudo tee /etc/cron.d/influx_resources
